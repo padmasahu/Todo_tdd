@@ -1,25 +1,53 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react'
+import { connect } from 'react-redux'
+import PropTypes from 'prop-types'
+import AddTodo from './components/addTodo/'
+import TodoList from './components/todoList/'
+import actions from './actions'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+export const App = ({ submitTodo, todos, deleteTodo, undeleteTodo, deleted, inputChanged, disableAddTodo }) => (
+  <div>
+    <h1>Todo List</h1>
+    <AddTodo submitTodo={submitTodo} inputChanged={inputChanged} disableAddTodo={disableAddTodo} />
+    <TodoList todos={todos} deleteTodo={deleteTodo} undeleteTodo={undeleteTodo} deleted={deleted} />
+  </div>
+)
+
+App.propTypes = {
+  submitTodo: PropTypes.func.isRequired,
+  todos: PropTypes.arrayOf(PropTypes.shape(
+    {
+      id: PropTypes.number.isRequired,
+      text: PropTypes.string.isRequired
+    }
+  )).isRequired,
+  deleteTodo: PropTypes.func.isRequired,
+  undeleteTodo: PropTypes.func.isRequired,
+  deleted: PropTypes.object.isRequired,
+  inputChanged: PropTypes.func.isRequired,
+  disableAddTodo: PropTypes.bool.isRequired
 }
 
-export default App;
+const mapStateToProps = state => state.todoListApp
+
+const mapDispatchToProps = dispatch => ({
+  submitTodo: (text) => {
+    if (text) {
+      dispatch(actions.submitTodo(text))
+    }
+  },
+
+  deleteTodo: (id) => {
+    dispatch(actions.deleteTodo(id))
+  },
+
+  undeleteTodo: () => {
+    dispatch(actions.undeleteTodo())
+  },
+
+  inputChanged: (inputText) => {
+    dispatch(actions.inputChanged(inputText))
+  }
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(App)
